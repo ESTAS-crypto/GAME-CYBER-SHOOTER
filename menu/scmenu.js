@@ -8,45 +8,118 @@ document.addEventListener('DOMContentLoaded', function() {
     const mainMenu = document.querySelector('.main-menu');
     const settingsMenu = document.querySelector('.settings-menu');
     const creditsMenu = document.querySelector('.credits-menu');
+    const leaderboardMenu = document.querySelector('.leaderboard-menu');
 
-    // Volume controls
+    // Settings controls
     const musicVolume = document.getElementById('musicVolume');
     const sfxVolume = document.getElementById('sfxVolume');
+    const sensitivity = document.getElementById('sensitivity');
+    const autoAim = document.getElementById('autoAim');
+    const screenShake = document.getElementById('screenShake');
+    const graphicsQuality = document.getElementById('graphicsQuality');
+    const vsync = document.getElementById('vsync');
+
+    // Initialize game state
+    let gameState = {
+        selectedMode: '',
+        selectedDifficulty: '',
+        selectedCharacter: '',
+        settings: {
+            musicVolume: 50,
+            sfxVolume: 70,
+            sensitivity: 5,
+            autoAim: true,
+            screenShake: false,
+            graphicsQuality: 'medium',
+            vsync: true
+        }
+    };
+
+    // Load saved settings
+    function loadSavedSettings() {
+        const savedSettings = localStorage.getItem('gameSettings');
+        if (savedSettings) {
+            gameState.settings = JSON.parse(savedSettings);
+
+            // Apply saved settings to controls
+            musicVolume.value = gameState.settings.musicVolume;
+            sfxVolume.value = gameState.settings.sfxVolume;
+            sensitivity.value = gameState.settings.sensitivity;
+            autoAim.checked = gameState.settings.autoAim;
+            screenShake.checked = gameState.settings.screenShake;
+            graphicsQuality.value = gameState.settings.graphicsQuality;
+            vsync.checked = gameState.settings.vsync;
+
+            // Apply audio settings
+            bgMusic.volume = gameState.settings.musicVolume / 100;
+            hoverSound.volume = gameState.settings.sfxVolume / 100;
+            clickSound.volume = gameState.settings.sfxVolume / 100;
+        }
+    }
+
+    // Save settings
+    function saveSettings() {
+        localStorage.setItem('gameSettings', JSON.stringify(gameState.settings));
+    }
+
+    // Audio functions
+    function playClickSound() {
+        clickSound.currentTime = 0;
+        clickSound.play().catch(e => console.log('Click sound prevented'));
+    }
+
+    function playHoverSound() {
+        hoverSound.currentTime = 0;
+        hoverSound.play().catch(e => console.log('Hover sound prevented'));
+    }
 
     // Start background music
-    bgMusic.volume = 0.5;
-    bgMusic.play().catch(e => console.log('Audio autoplay prevented'));
+    function initializeAudio() {
+        bgMusic.volume = gameState.settings.musicVolume / 100;
+        bgMusic.play().catch(e => console.log('Audio autoplay prevented'));
+    }
 
-    // Settings button click
+    // Menu navigation functions
+    function showMenu(menu) {
+        // Hide all menus
+        [mainMenu, settingsMenu, creditsMenu, leaderboardMenu].forEach(m => {
+            m.classList.add('hidden');
+        });
+
+        // Show selected menu
+        menu.classList.remove('hidden');
+
+        // Reset transform for animation
+        if (menu !== mainMenu) {
+            setTimeout(() => {
+                menu.style.transform = 'translateX(0)';
+            }, 10);
+        }
+    }
+
+    // Button click handlers
     document.getElementById('settingsBtn').addEventListener('click', () => {
         playClickSound();
-        mainMenu.classList.add('hidden');
-        settingsMenu.classList.remove('hidden');
-        // Reset transform after displaying
-        setTimeout(() => {
-            settingsMenu.style.transform = 'translateX(0)';
-        }, 10);
+        showMenu(settingsMenu);
     });
 
-    // Credits button click
     document.getElementById('creditsBtn').addEventListener('click', () => {
         playClickSound();
-        mainMenu.classList.add('hidden');
-        creditsMenu.classList.remove('hidden');
-        // Reset transform after displaying
-        setTimeout(() => {
-            creditsMenu.style.transform = 'translateX(0)';
-        }, 10);
+        showMenu(creditsMenu);
     });
 
-    // Back buttons
+    document.getElementById('leaderboardBtn').addEventListener('click', () => {
+        playClickSound();
+        showMenu(leaderboardMenu);
+    });
+
+    // Back button handler
     document.querySelectorAll('.back-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             playClickSound();
-            const activeMenu = document.querySelector('.settings-menu:not(.hidden), .credits-menu:not(.hidden)');
+            const activeMenu = document.querySelector('.settings-menu:not(.hidden), .credits-menu:not(.hidden), .leaderboard-menu:not(.hidden)');
             if (activeMenu) {
                 activeMenu.style.transform = 'translateX(100%)';
-                // Wait for animation to complete before hiding
                 setTimeout(() => {
                     activeMenu.classList.add('hidden');
                     mainMenu.classList.remove('hidden');
@@ -61,6 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
             playClickSound();
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
+            gameState.selectedMode = btn.dataset.mode;
         });
     });
 
@@ -70,44 +144,102 @@ document.addEventListener('DOMContentLoaded', function() {
             playClickSound();
             document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
+            gameState.selectedDifficulty = btn.dataset.diff;
         });
     });
 
-    // Volume controls
+    // Character selection
+    document.querySelectorAll('.character-card').forEach(card => {
+        card.addEventListener('click', () => {
+            playClickSound();
+            document.querySelectorAll('.character-card').forEach(c => {
+                c.style.border = '2px solid var(--neon-green)';
+            });
+            card.style.border = '2px solid var(--neon-blue)';
+            gameState.selectedCharacter = card.dataset.character;
+        });
+    });
+
+    // Settings controls handlers
     musicVolume.addEventListener('input', (e) => {
-        bgMusic.volume = e.target.value / 100;
-        localStorage.setItem('musicVolume', e.target.value);
+        gameState.settings.musicVolume = parseInt(e.target.value);
+        bgMusic.volume = gameState.settings.musicVolume / 100;
+        saveSettings();
+        updateValueDisplay(e.target);
     });
 
     sfxVolume.addEventListener('input', (e) => {
-        hoverSound.volume = clickSound.volume = e.target.value / 100;
-        localStorage.setItem('sfxVolume', e.target.value);
+        gameState.settings.sfxVolume = parseInt(e.target.value);
+        hoverSound.volume = clickSound.volume = gameState.settings.sfxVolume / 100;
+        saveSettings();
+        updateValueDisplay(e.target);
     });
 
-    // Hover sound effect
-    document.querySelectorAll('button').forEach(button => {
-        button.addEventListener('mouseenter', () => {
-            hoverSound.currentTime = 0;
-            hoverSound.play().catch(e => console.log('Hover sound prevented'));
+    sensitivity.addEventListener('input', (e) => {
+        gameState.settings.sensitivity = parseInt(e.target.value);
+        saveSettings();
+        updateValueDisplay(e.target);
+    });
+
+    // Checkbox settings handlers
+    [autoAim, screenShake, vsync].forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+            gameState.settings[e.target.id] = e.target.checked;
+            saveSettings();
         });
     });
 
-    function playClickSound() {
-        clickSound.currentTime = 0;
-        clickSound.play().catch(e => console.log('Click sound prevented'));
+    // Graphics quality handler
+    graphicsQuality.addEventListener('change', (e) => {
+        gameState.settings.graphicsQuality = e.target.value;
+        saveSettings();
+    });
+
+    // Value display updater
+    function updateValueDisplay(input) {
+        const display = input.nextElementSibling;
+        if (display && display.classList.contains('value-display')) {
+            display.textContent = input.type === 'range' ? `${input.value}%` : input.value;
+        }
     }
 
-    // Load saved settings
-    const savedMusicVol = localStorage.getItem('musicVolume');
-    const savedSfxVol = localStorage.getItem('sfxVolume');
+    // Hover sound effect for all buttons
+    document.querySelectorAll('button, .character-card').forEach(element => {
+        element.addEventListener('mouseenter', () => {
+            if (!element.classList.contains('selected')) {
+                playHoverSound();
+            }
+        });
+    });
 
-    if (savedMusicVol) {
-        musicVolume.value = savedMusicVol;
-        bgMusic.volume = savedMusicVol / 100;
-    }
+    // Initialize
+    loadSavedSettings();
+    initializeAudio();
 
-    if (savedSfxVol) {
-        sfxVolume.value = savedSfxVol;
-        hoverSound.volume = clickSound.volume = savedSfxVol / 100;
-    }
+    // Update all value displays on load
+    document.querySelectorAll('input[type="range"]').forEach(updateValueDisplay);
+
+    // Start button handler
+    document.getElementById('start-button').addEventListener('click', () => {
+        playClickSound();
+        // Show loading screen
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            loadingScreen.classList.remove('hidden');
+            const progress = loadingScreen.querySelector('.loading-progress');
+            if (progress) {
+                let width = 0;
+                const interval = setInterval(() => {
+                    if (width >= 100) {
+                        clearInterval(interval);
+                        // Proceed to game after loading
+                        window.location.href = '../loading2/index.html';
+                    } else {
+                        width++;
+                        progress.style.width = width + '%';
+                    }
+                }, 20);
+            }
+        }
+    });
 });
