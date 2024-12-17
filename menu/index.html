@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBER SHOOTER - Main Menu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="stylemenu.css">
+</head>
+
+<body>
+    <!-- Audio Elements -->
+    <audio id="bgMusic" loop>
+        <source src="audio/background.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="hoverSound" src="audio/hover.mp3"></audio>
+    <audio id="clickSound" src="audio/click.mp3"></audio>
+
+    <!-- Main Menu Container -->
+    <div id="menu-screen">
+        <div class="menu-content">
+            <!-- Game Title -->
+            <h1 class="game-title">CYBER SHOOTER</h1>
+
+            <!-- Main Menu -->
+            <div class="main-menu">
+                <!-- Game Modes -->
+                <div class="menu-section">
+                    <h2>Select Mode</h2>
+                    <div class="button-group">
+                        <button class="game-button mode-btn" data-mode="arcade">
+                            Arcade
+                        </button>
+                        <button class="game-button mode-btn" data-mode="survival">
+                            Survival
+                        </button>
+                        <button class="game-button mode-btn" data-mode="story">
+                            Story
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Difficulty Selection -->
+                <div class="menu-section">
+                    <h2>Difficulty</h2>
+                    <div class="button-group">
+                        <button class="game-button diff-btn" data-diff="easy">
+                            Easy
+                        </button>
+                        <button class="game-button diff-btn" data-diff="medium">
+                            Medium
+                        </button>
+                        <button class="game-button diff-btn" data-diff="hard">
+                            Hard
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Character Selection -->
+                <div class="menu-section">
+                    <h2>Select Character</h2>
+                    <div class="character-group">
+                        <div class="character-card" data-character="soldier">
+                            <div class="character-icon">🎖️</div>
+                            <span class="character-name">Soldier</span>
+                        </div>
+                        <div class="character-card" data-character="hacker">
+                            <div class="character-icon">💻</div>
+                            <span class="character-name">Hacker</span>
+                        </div>
+                        <div class="character-card" data-character="medic">
+                            <div class="character-icon">💉</div>
+                            <span class="character-name">Medic</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Start Button -->
+                <a href="../loading2/index.html"><button id="start-button" class="cyber-button">START GAME</button></a>
+
+                <!-- Bottom Menu Buttons -->
+                <div class="bottom-buttons">
+                    <button class="menu-button" id="settingsBtn">Settings</button>
+                    <button class="menu-button" id="leaderboardBtn">Leaderboard</button>
+                    <button class="menu-button" id="creditsBtn">Credits</button>
+                </div>
+            </div>
+
+            <!-- Settings Menu -->
+            <div class="settings-menu hidden">
+                <h2>Settings</h2>
+
+                <!-- Audio Settings -->
+                <div class="settings-section">
+                    <h3>Audio</h3>
+                    <div class="setting-item">
+                        <label>Music Volume</label>
+                        <input type="range" id="musicVolume" min="0" max="100" value="50">
+                        <span class="value-display">50%</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>Sound Effects</label>
+                        <input type="range" id="sfxVolume" min="0" max="100" value="70">
+                        <span class="value-display">70%</span>
+                    </div>
+                </div>
+
+                <!-- Game Settings -->
+                <div class="settings-section">
+                    <h3>Game</h3>
+                    <div class="setting-item">
+                        <label>Mouse Sensitivity</label>
+                        <input type="range" id="sensitivity" min="1" max="10" value="5">
+                        <span class="value-display">5</span>
+                    </div>
+                    <div class="setting-item checkbox">
+                        <label>
+                            <input type="checkbox" id="autoAim" checked>
+                            Auto-Aim Assist
+                        </label>
+                    </div>
+                    <div class="setting-item checkbox">
+                        <label>
+                            <input type="checkbox" id="screenShake">
+                            Screen Shake Effects
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Graphics Settings -->
+                <div class="settings-section">
+                    <h3>Graphics</h3>
+                    <div class="setting-item">
+                        <label>Quality</label>
+                        <select id="graphicsQuality">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="ultra">Ultra</option>
+                        </select>
+                    </div>
+                    <div class="setting-item checkbox">
+                        <label>
+                            <input type="checkbox" id="vsync" checked>
+                            V-Sync
+                        </label>
+                    </div>
+                </div>
+
+                <button class="back-btn">Back to Menu</button>
+            </div>
+
+            <!-- Credits Menu -->
+            <div class="credits-menu hidden">
+                <h2>Credits</h2>
+                <div class="credits-content">
+                    <!-- Development Team -->
+                    <div class="credit-section">
+                        <h3>Development Team</h3>
+                        <div class="credit-item">
+                            <span class="credit-role">Game Director</span>
+                            <span class="credit-name">John Anderson</span>
+                        </div>
+                        <div class="credit-item">
+                            <span class="credit-role">Lead Programmer</span>
+                            <span class="credit-name">Sarah Chen</span>
+                        </div>
+                        <div class="credit-item">
+                            <span class="credit-role">Art Director</span>
+                            <span class="credit-name">Michael Rodriguez</span>
+                        </div>
+                    </div>
+
+                    <!-- Art & Design -->
+                    <div class="credit-section">
+                        <h3>Art & Design</h3>
+                        <div class="credit-item">
+                            <span class="credit-role">Character Designer</span>
+                            <span class="credit-name">Emma Wilson</span>
+                        </div>
+                        <div class="credit-item">
+                            <span class="credit-role">Environment Artist</span>
+                            <span class="credit-name">David Garcia</span>
+                        </div>
+                        <div class="credit-item">
+                            <span class="credit-role">UI/UX Designer</span>
+                            <span class="credit-name">Lisa Taylor</span>
+                        </div>
+                    </div>
+
+                    <!-- Sound & Music -->
+                    <div class="credit-section">
+                        <h3>Sound & Music</h3>
+                        <div class="credit-item">
+                            <span class="credit-role">Music Composer</span>
+                            <span class="credit-name">James Williams</span>
+                        </div>
+                        <div class="credit-item">
+                            <span class="credit-role">Sound Designer</span>
+                            <span class="credit-name">Maria Smith</span>
+                        </div>
+                    </div>
+
+                    <!-- Special Thanks -->
+                    <div class="credit-section">
+                        <h3>Special Thanks</h3>
+                        <p>Our Amazing Beta Testers</p>
+                        <p>The Cyberpunk Gaming Community</p>
+                        <p>All Our Supporters on Social Media</p>
+                    </div>
+
+                    <!-- Legal -->
+                    <div class="credit-section">
+                        <h3>Legal</h3>
+                        <p>© 2024 Cyber Shooter Game Studio</p>
+                        <p>All Rights Reserved</p>
+                    </div>
+                </div>
+                <button class="back-btn">Back to Menu</button>
+            </div>
+
+            <!-- Leaderboard Menu -->
+            <div class="leaderboard-menu hidden">
+                <h2>Leaderboard</h2>
+                <div class="leaderboard-content">
+                    <div class="leaderboard-tabs">
+                        <button class="tab-btn active" data-mode="arcade">Arcade</button>
+                        <button class="tab-btn" data-mode="survival">Survival</button>
+                    </div>
+                    <div class="leaderboard-table">
+                        <div class="table-header">
+                            <span class="rank">Rank</span>
+                            <span class="player">Player</span>
+                            <span class="score">Score</span>
+                            <span class="date">Date</span>
+                        </div>
+                        <div class="table-content">
+                            <!-- Leaderboard entries will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                <button class="back-btn">Back to Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="hidden">
+        <div class="loading-content">
+            <h2>Loading</h2>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p class="loading-tip">Tip: Double-tap Shift to activate cyber boost</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="scmenu.js"></script>
+</body>
+
+</html>
