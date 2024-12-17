@@ -5,16 +5,251 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CYBER SHOOTER - Game</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/game/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <!-- Game Container & Elements -->
+    <!-- Audio Elements -->
+    <audio id="bgMusic" loop>
+        <source src="audio/background.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="shootSound" src="audio/shoot.mp3"></audio>
+    <audio id="hitSound" src="audio/hit.mp3"></audio>
+    <audio id="reloadSound" src="audio/reload.mp3"></audio>
+    <audio id="dashSound" src="audio/dash.mp3"></audio>
+    <audio id="shieldSound" src="audio/shield.mp3"></audio>
+    <audio id="ultimateSound" src="audio/ultimate.mp3"></audio>
+
+    <!-- Main Game Container -->
     <div id="game-container">
-        <!-- [Game elements dari kode sebelumnya] -->
+        <!-- Game Canvas -->
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- Game HUD -->
+        <div id="hud">
+            <!-- Top HUD Section -->
+            <div class="hud-top">
+                <!-- Score Display -->
+                <div class="score-container">
+                    <div class="score">Score: <span>0</span></div>
+                    <div class="multiplier">×<span>1</span></div>
+                </div>
+
+                <!-- Radar/Minimap -->
+                <div class="minimap-container">
+                    <canvas id="minimapCanvas"></canvas>
+                    <div class="minimap-border"></div>
+                </div>
+
+                <!-- Kill Feed -->
+                <div id="kill-feed"></div>
+
+                <!-- Wave/Mission Info -->
+                <div class="mission-info">
+                    <div class="wave-number">Wave <span>1</span></div>
+                    <div class="enemies-remaining">Enemies: <span>10</span></div>
+                </div>
+            </div>
+
+            <!-- Center HUD Elements -->
+            <div class="hud-center">
+                <!-- Crosshair -->
+                <div id="crosshair">
+                    <div class="crosshair-line vertical"></div>
+                    <div class="crosshair-line horizontal"></div>
+                    <div class="crosshair-dot"></div>
+                </div>
+
+                <!-- Hit Marker -->
+                <div id="hitmarker" class="hidden">
+                    <div class="hitmarker-line"></div>
+                    <div class="hitmarker-line"></div>
+                </div>
+
+                <!-- Damage Direction Indicator -->
+                <div id="damage-indicator">
+                    <div class="damage-arrow"></div>
+                </div>
+            </div>
+
+            <!-- Bottom HUD Section -->
+            <div class="hud-bottom">
+                <!-- Player Stats -->
+                <div class="player-stats">
+                    <div class="health-container">
+                        <div class="health-bar">
+                            <div class="health-fill"></div>
+                            <span class="health-text">100</span>
+                        </div>
+                    </div>
+                    <div class="shield-container">
+                        <div class="shield-bar">
+                            <div class="shield-fill"></div>
+                            <span class="shield-text">100</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ability Bar -->
+                <div class="ability-bar">
+                    <div class="ability-slot" data-ability="dash">
+                        <div class="ability-icon">⚡</div>
+                        <div class="cooldown-overlay"></div>
+                        <span class="keybind">SHIFT</span>
+                    </div>
+                    <div class="ability-slot" data-ability="shield">
+                        <div class="ability-icon">🛡️</div>
+                        <div class="cooldown-overlay"></div>
+                        <span class="keybind">Q</span>
+                    </div>
+                    <div class="ability-slot" data-ability="ultimate">
+                        <div class="ability-icon">⚔️</div>
+                        <div class="cooldown-overlay"></div>
+                        <div class="ultimate-progress"></div>
+                        <span class="keybind">F</span>
+                    </div>
+                </div>
+
+                <!-- Weapon Info -->
+                <div class="weapon-info">
+                    <div class="weapon-heat">
+                        <div class="heat-bar">
+                            <div class="heat-fill"></div>
+                        </div>
+                    </div>
+                    <div class="ammo-display">
+                        <div class="ammo-counter">
+                            <span class="current-ammo">30</span>
+                            <span class="total-ammo">/ 90</span>
+                        </div>
+                        <div class="weapon-name">Cyber Rifle</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pause Menu -->
+        <div id="pause-menu" class="menu-overlay hidden">
+            <div class="menu-content">
+                <h2>PAUSED</h2>
+                <div class="menu-options">
+                    <button class="resume-btn">Resume</button>
+                    <button class="settings-btn">Settings</button>
+                    <button class="quit-btn">Quit to Menu</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Menu -->
+        <div id="settings-menu" class="menu-overlay hidden">
+            <div class="settings-panel">
+                <h2>Settings</h2>
+
+                <!-- Audio Settings -->
+                <div class="settings-section">
+                    <h3>Audio</h3>
+                    <div class="setting-item">
+                        <label for="masterVolume">Master Volume</label>
+                        <input type="range" id="masterVolume" min="0" max="100" value="100">
+                        <span class="value-display">100%</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="musicVolume">Music</label>
+                        <input type="range" id="musicVolume" min="0" max="100" value="50">
+                        <span class="value-display">50%</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="sfxVolume">Sound Effects</label>
+                        <input type="range" id="sfxVolume" min="0" max="100" value="70">
+                        <span class="value-display">70%</span>
+                    </div>
+                </div>
+
+                <!-- Graphics Settings -->
+                <div class="settings-section">
+                    <h3>Graphics</h3>
+                    <div class="setting-item">
+                        <label for="quality">Quality</label>
+                        <select id="quality">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="ultra">Ultra</option>
+                        </select>
+                    </div>
+                    <div class="setting-item checkbox">
+                        <label>
+                            <input type="checkbox" id="vsync" checked>
+                            V-Sync
+                        </label>
+                    </div>
+                    <div class="setting-item checkbox">
+                        <label>
+                            <input type="checkbox" id="fullscreen">
+                            Fullscreen
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Gameplay Settings -->
+                <div class="settings-section">
+                    <h3>Gameplay</h3>
+                    <div class="setting-item">
+                        <label for="sensitivity">Mouse Sensitivity</label>
+                        <input type="range" id="sensitivity" min="1" max="20" value="10">
+                        <span class="value-display">10</span>
+                    </div>
+                    <div class="setting-item checkbox">
+                        <label>
+                            <input type="checkbox" id="hitMarkers" checked>
+                            Hit Markers
+                        </label>
+                    </div>
+                    <div class="setting-item checkbox">
+                        <label>
+                            <input type="checkbox" id="damageNumbers" checked>
+                            Damage Numbers
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-buttons">
+                    <button class="apply-btn">Apply</button>
+                    <button class="back-btn">Back</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="game-over" class="menu-overlay hidden">
+            <div class="game-over-content">
+                <h2>GAME OVER</h2>
+                <div class="stats-summary">
+                    <div class="final-score">Final Score: <span>0</span></div>
+                    <div class="waves-survived">Waves Survived: <span>0</span></div>
+                    <div class="kills">Total Kills: <span>0</span></div>
+                    <div class="accuracy">Accuracy: <span>0</span>%</div>
+                </div>
+                <div class="menu-options">
+                    <button class="retry-btn">Retry</button>
+                    <button class="quit-btn">Quit to Menu</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div id="notification-container">
+            <div id="wave-announcement" class="hidden">
+                <h3>Wave <span>1</span></h3>
+                <p>Incoming Enemies</p>
+            </div>
+            <div id="powerup-notifications"></div>
+        </div>
     </div>
-    <script src="/game/script.js"></script>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
 </body>
 
 </html>
