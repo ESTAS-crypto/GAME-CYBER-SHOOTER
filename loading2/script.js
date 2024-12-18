@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function finishLoading() {
         setTimeout(() => {
-            window.location.href = '../game/index.html';
+            window.location.href = '../game/game.html';
         }, 1000);
     }
 
